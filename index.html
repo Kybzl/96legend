@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>7周年庆典 96+增能 - 足球抽卡游戏</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a5e1a 0%, #0d3d0d 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+            position: relative;
+            touch-action: manipulation;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 0%, transparent 40%),
+                repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 11px);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        /* 顶部区域 */
+        .header {
+            text-align: center;
+            padding: 15px 0;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            margin-bottom: 5px;
+            background: linear-gradient(to right, #ffd700, #ffffff, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            position: relative;
+            padding: 0 10px;
+        }
+        
+        .title::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #ffd700, transparent);
+            border-radius: 50%;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #ffd700;
+            margin-bottom: 15px;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        
+        /* 抽卡区域 */
+        .draw-section {
+            background: rgba(0, 30, 0, 0.7);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            border: 2px solid #ffd700;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .draw-section::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 2px solid transparent;
+            border-radius: 22px;
+            background: linear-gradient(45deg, #ffd700, #00ff00, #ffd700) border-box;
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) padding-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            z-index: -1;
+        }
+        
+        .card-display {
+            background: linear-gradient(145deg, #0a330a, #0d4a0d);
+            border-radius: 15px;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .card-display::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at center, rgba(255,215,0,0.1) 0%, transparent 70%),
+                repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,80,0,0.3) 5px, rgba(0,80,0,0.3) 10px);
+        }
+        
+        .card-placeholder {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 18px;
+            padding: 20px;
+            z-index: 2;
+        }
+        
+        .player-card {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            animation: cardAppear 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2;
+        }
+        
+        @keyframes cardAppear {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .player-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #ffd700;
+            background: #0a3a0a;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        .player-image i {
+            font-size: 50px;
+            color: #ffd700;
+        }
+        
+        .player-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+            text-shadow: 0 0 5px rgba(0,0,0,0.8);
+        }
+        
+        .player-position {
+            font-size: 16px;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+        
+        .player-rating {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(to right, #ff8c00, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 3px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        /* 轮盘样式 */
+        .wheel-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: none;
+            z-index: 1;
+        }
+        
+        .wheel {
+            display: flex;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition-timing-function: cubic-bezier(0.1, 0.2, 0.8, 0.9);
+        }
+        
+        .wheel-item {
+            width: 100px;
+            height: 120px;
+            margin: 0 8px;
+            background: rgba(0, 40, 0, 0.8);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            opacity: 0.7;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .wheel-item.collected {
+            background: rgba(20, 80, 0, 0.8);
+            border-color: rgba(255, 215, 0, 0.7);
+            opacity: 1;
+        }
+        
+        .wheel-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 8px;
+            border: 2px solid #666;
+        }
+        
+        .wheel-item.collected img {
+            border-color: #ffd700;
+        }
+        
+        .wheel-item .name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #888;
+            text-align: center;
+            padding: 0 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 90px;
+        }
+        
+        .wheel-item.collected .name {
+            color: #ffd700;
+            text-shadow: 0 0 3px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* 选中框样式 */
+        .selector {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 110px;
+            height: 140px;
+            border: 3px solid #ffd700;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        .selector::before, .selector::after {
+            content: "";
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #ffd700;
+        }
+        
+        .selector::before {
+            top: -15px;
+            left: -15px;
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        .selector::after {
+            top: -15px;
+            right: -15px;
+            border-left: none;
+            border-bottom: none;
+        }
+        
+        .selector-corner-bottom-left, .selector-corner-bottom-right {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #ffd700;
+        }
+        
+        .selector-corner-bottom-left {
+            bottom: -15px;
+            left: -15px;
+            border-top: none;
+            border-right: none;
+        }
+        
+        .selector-corner-bottom-right {
+            bottom: -15px;
+            right: -15px;
+            border-top: none;
+            border-left: none;
+        }
+        
+        /* 重复计数标记 */
+        .wheel-item .duplicate-count {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ffd700;
+            color: #0a3a0a;
+            font-size: 10px;
+            font-weight: bold;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        
+        .draw-button {
+            background: linear-gradient(to bottom, #ffd700, #daa520);
+            color: #0a3a0a;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #b8860b, 0 10px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .draw-button:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #b8860b, 0 6px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .draw-button::after {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .draw-button:active::after {
+            opacity: 1;
+        }
+        
+        .counter {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #aaa;
+        }
+        
+        /* 集卡记录区域 */
+        .collection-section {
+            background: rgba(0, 30, 0, 0.7);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            border: 2px solid #ffd700;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #ffd700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+        }
+        
+        .player-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        .player-item {
+            background: rgba(30, 30, 30, 0.7);
+            border-radius: 10px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            color: #888;
+            border: 1px solid rgba(100, 100, 100, 0.5);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .player-item.collected {
+            background: rgba(20, 80, 0, 0.8);
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+        
+        .player-item.collected::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255,215,0,0.2) 0%, transparent 70%);
+        }
+        
+        .player-item .player-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-bottom: 5px;
+            border: 1px solid rgba(100, 100, 100, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .player-item.collected .player-image {
+            border: 1px solid rgba(255, 215, 0, 0.7);
+        }
+        
+        .player-item .player-image i {
+            font-size: 20px;
+            color: #888;
+        }
+        
+        .player-item.collected .player-image i {
+            color: #ffd700;
+        }
+        
+        .player-item .player-shortname {
+            font-weight: bold;
+            font-size: 11px;
+            text-align: center;
+            line-height: 1.1;
+            padding: 0 2px;
+        }
+        
+        .player-item .draw-count {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            background: #ffd700;
+            color: #0a3a0a;
+            font-size: 10px;
+            font-weight: bold;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        
+        /* 弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #0a330a, #0d4a0d);
+            border-radius: 20px;
+            width: 85%;
+            max-width: 350px;
+            padding: 25px;
+            text-align: center;
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            position: relative;
+            animation: modalAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes modalAppear {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .modal-title {
+            font-size: 26px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .modal-player {
+            margin: 20px 0;
+        }
+        
+        .modal-button {
+            background: linear-gradient(to bottom, #ffd700, #daa520);
+            color: #0a3a0a;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #b8860b;
+            transition: all 0.2s;
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        .modal-button:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 #b8860b;
+        }
+        
+        /* 动画效果 */
+        @keyframes shine {
+            0% { background-position: -100px; }
+            100% { background-position: 200px; }
+        }
+        
+        .drawing .card-display {
+            animation: pulse 0.5s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 10px rgba(255,215,0,0.3); }
+            100% { box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 30px rgba(255,215,0,0.8); }
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 400px) {
+            .title { font-size: 24px; }
+            .player-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
+            .player-item { height: 75px; }
+            .player-item .player-shortname { font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部标题区域 -->
+        <div class="header">
+            <div class="title">7周年庆典 96+增能</div>
+            <div class="subtitle"></div>
+        </div>
+        
+        <!-- 抽卡区域 -->
+        <div class="draw-section">
+            <div class="card-display">
+                <div class="wheel-container" id="wheel-container">
+                    <div class="wheel" id="wheel"></div>
+                </div>
+                
+                <div class="card-placeholder">
+                    <i class="fas fa-futbol"></i>
+                    <p>点击下方按钮抽取球员</p>
+                </div>
+                <div class="player-card">
+                    <div class="player-image">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="player-name">梅西</div>
+                    <div class="player-position">前锋</div>
+                    <div class="player-rating">96+</div>
+                </div>
+            </div>
+            
+            <button class="draw-button" id="draw-button">
+                <i class="fas fa-gift"></i> 抽取球员
+            </button>
+            
+            <div class="counter">
+                <div>今日已抽: <span id="draw-count">0</span> 次</div>
+                <div>已收集: <span id="collection-count">0</span>/140</div>
+            </div>
+        </div>
+        
+        <!-- 集卡记录区域 -->
+        <div class="collection-section">
+            <div class="section-title">
+                <div><i class="fas fa-bookmark"></i> 球员图鉴</div>
+                <div id="collection-progress">0/140</div>
+            </div>
+            <div class="player-grid" id="player-collection">
+                <!-- 球员列表通过JS动态生成 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 抽卡结果弹窗 -->
+    <div class="modal" id="result-modal">
+        <div class="modal-content">
+            <div class="modal-title">恭喜你获得</div>
+            <div class="modal-player">
+                <div class="player-image">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="player-name" id="modal-player-name">梅西</div>
+                <div class="player-position" id="modal-player-position">前锋</div>
+                <div class="player-rating" id="modal-player-rating">96+</div>
+            </div>
+            <button class="modal-button" id="modal-confirm">确认</button>
+        </div>
+    </div>
+    
+    <script>
+        // 模拟球员数据（实际应为140名）
+        const players = [
+            { id: 1, name: "梅西", position: "前锋", rating: "96+", collected: false, drawCount: 0 },
+            { id: 2, name: "C罗", position: "前锋", rating: "96+", collected: false, drawCount: 0 },
+            { id: 3, name: "内马尔", position: "边锋", rating: "94", collected: false, drawCount: 0 },
+            { id: 4, name: "姆巴佩", position: "前锋", rating: "95", collected: false, drawCount: 0 },
+            { id: 5, name: "德布劳内", position: "中场", rating: "94", collected: false, drawCount: 0 },
+            { id: 6, name: "哈兰德", position: "前锋", rating: "95", collected: false, drawCount: 0 },
+            { id: 7, name: "本泽马", position: "前锋", rating: "94", collected: false, drawCount: 0 },
+            { id: 8, name: "莱万多夫斯基", position: "前锋", rating: "94", collected: false, drawCount: 0 },
+            { id: 9, name: "莫德里奇", position: "中场", rating: "93", collected: false, drawCount: 0 },
+            { id: 10, name: "范迪克", position: "后卫", rating: "93", collected: false, drawCount: 0 },
+            { id: 11, name: "萨拉赫", position: "边锋", rating: "93", collected: false, drawCount: 0 },
+            { id: 12, name: "凯恩", position: "前锋", rating: "93", collected: false, drawCount: 0 },
+            { id: 13, name: "孙兴慜", position: "边锋", rating: "92", collected: false, drawCount: 0 },
+            { id: 14, name: "诺伊尔", position: "守门员", rating: "92", collected: false, drawCount: 0 },
+            { id: 15, name: "坎特", position: "中场", rating: "91", collected: false, drawCount: 0 }
+        ];
+        
+        // 其他球员数据占位
+        const allPlayers = Array.from({ length: 140 }, (_, i) => {
+            if (i < players.length) return players[i];
+            return {
+                id: i + 1,
+                name: `球员${i + 1}`,
+                position: ["前锋", "中场", "后卫", "守门员"][i % 4],
+                rating: `${85 + i % 12}`,
+                collected: false,
+                drawCount: 0
+            };
+        });
+        
+        // DOM元素
+        const drawButton = document.getElementById('draw-button');
+        const cardDisplay = document.querySelector('.card-display');
+        const cardPlaceholder = document.querySelector('.card-placeholder');
+        const playerCard = document.querySelector('.player-card');
+        const playerCollection = document.getElementById('player-collection');
+        const drawCountElement = document.getElementById('draw-count');
+        const collectionCountElement = document.getElementById('collection-count');
+        const collectionProgress = document.getElementById('collection-progress');
+        const resultModal = document.getElementById('result-modal');
+        const modalPlayerName = document.getElementById('modal-player-name');
+        const modalPlayerPosition = document.getElementById('modal-player-position');
+        const modalPlayerRating = document.getElementById('modal-player-rating');
+        const modalConfirm = document.getElementById('modal-confirm');
+        const wheelContainer = document.getElementById('wheel-container');
+        const wheel = document.getElementById('wheel');
+        
+        // 游戏状态
+        let drawCount = 0;
+        let collectionCount = 0;
+        let isDrawing = false;
+        
+        // 初始化集卡记录
+        function initPlayerCollection() {
+            playerCollection.innerHTML = '';
+            allPlayers.forEach(player => {
+                const playerItem = document.createElement('div');
+                playerItem.className = `player-item ${player.collected ? 'collected' : ''}`;
+                playerItem.dataset.id = player.id;
+                
+                playerItem.innerHTML = `
+                    <div class="player-image">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="player-shortname">${player.name.length > 4 ? player.name.substring(0, 4) : player.name}</div>
+                    ${player.drawCount > 0 ? `<div class="draw-count">${player.drawCount}</div>` : ''}
+                `;
+                
+                playerCollection.appendChild(playerItem);
+            });
+            
+            collectionProgress.textContent = `${collectionCount}/${allPlayers.length}`;
+        }
+        
+        // 创建轮盘内容
+        function createWheel() {
+            wheel.innerHTML = '';
+            
+            // 创建轮盘项（重复3次以确保连续滚动）
+            for (let i = 0; i < 3; i++) {
+                allPlayers.forEach(player => {
+                    const wheelItem = document.createElement('div');
+                    wheelItem.className = `wheel-item ${player.collected ? 'collected' : ''}`;
+                    
+                    wheelItem.innerHTML = `
+                        <div class="player-image">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="name">${player.name}</div>
+                        ${player.drawCount > 0 ? `<div class="duplicate-count">${player.drawCount}</div>` : ''}
+                    `;
+                    
+                    wheel.appendChild(wheelItem);
+                });
+            }
+        }
+        
+        // 抽卡功能
+        function drawPlayer() {
+            if (isDrawing) return;
+            isDrawing = true;
+            
+            // 显示轮盘并隐藏其他内容
+            wheelContainer.style.display = 'block';
+            cardPlaceholder.style.display = 'none';
+            playerCard.style.display = 'none';
+            
+            // 创建轮盘内容
+            createWheel();
+            
+            // 设置初始位置（中间部分）
+            const wheelWidth = wheel.offsetWidth;
+            const containerWidth = wheelContainer.offsetWidth;
+            const startPosition = -(wheelWidth / 3) + (containerWidth / 2);
+            wheel.style.left = '50%';
+            wheel.style.transform = 'translateX(-50%)';
+            
+            // 随机选择一名球员
+            const randomIndex = Math.floor(Math.random() * allPlayers.length);
+            const selectedPlayer = allPlayers[randomIndex];
+            
+            // 计算停止位置（使选中的球员居中）
+            const itemWidth = 116; // 100px + 16px margin
+            const targetPosition = -(randomIndex * itemWidth) - (itemWidth / 2) + (containerWidth / 2);
+            
+            // 添加滚动动画
+            wheel.style.transition = 'transform 3s cubic-bezier(0.2, 0.8, 0.1, 0.9)';
+            wheel.style.transform = `translateX(calc(-50% + ${targetPosition}px))`;
+            
+            // 动画结束后显示结果
+            setTimeout(() => {
+                // 更新收集状态
+                if (!selectedPlayer.collected) {
+                    selectedPlayer.collected = true;
+                    collectionCount++;
+                    collectionCountElement.textContent = collectionCount;
+                    collectionProgress.textContent = `${collectionCount}/${allPlayers.length}`;
+                }
+                
+                // 更新抽中次数
+                selectedPlayer.drawCount++;
+                
+                // 更新抽卡次数
+                drawCount++;
+                drawCountElement.textContent = drawCount;
+                
+                // 更新集卡记录显示
+                const playerItem = document.querySelector(`.player-item[data-id="${selectedPlayer.id}"]`);
+                if (playerItem) {
+                    playerItem.classList.add('collected');
+                    // 更新抽中次数显示
+                    let countDisplay = playerItem.querySelector('.draw-count');
+                    if (countDisplay) {
+                        countDisplay.textContent = selectedPlayer.drawCount;
+                    } else {
+                        countDisplay = document.createElement('div');
+                        countDisplay.className = 'draw-count';
+                        countDisplay.textContent = selectedPlayer.drawCount;
+                        playerItem.appendChild(countDisplay);
+                    }
+                }
+                
+                // 隐藏轮盘
+                wheelContainer.style.display = 'none';
+                wheel.style.transition = 'none';
+                
+                // 更新卡片显示
+                document.querySelector('.player-name').textContent = selectedPlayer.name;
+                document.querySelector('.player-position').textContent = selectedPlayer.position;
+                document.querySelector('.player-rating').textContent = selectedPlayer.rating;
+                
+                // 显示球员卡片
+                playerCard.style.display = 'flex';
+                
+                // 显示弹窗
+                modalPlayerName.textContent = selectedPlayer.name;
+                modalPlayerPosition.textContent = selectedPlayer.position;
+                modalPlayerRating.textContent = selectedPlayer.rating;
+                resultModal.style.display = 'flex';
+                
+                isDrawing = false;
+            }, 3000);
+        }
+        
+        // 事件监听
+        drawButton.addEventListener('click', drawPlayer);
+        
+        modalConfirm.addEventListener('click', () => {
+            resultModal.style.display = 'none';
+        });
+        
+        // 初始化游戏
+        initPlayerCollection();
+    </script>
+</body>
+</html>
